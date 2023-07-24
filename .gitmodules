@@ -9,7 +9,7 @@
 	url = https://github.com/boostorg/boost.git
 [submodule "librime"]
 	path = app/src/main/jni/librime
-	url = https://github.com/rime/librime.git
+	url = https://github.com/mokapsing/librime.git
 	ignore = dirty
 [submodule "libiconv"]
 	path = app/src/main/jni/libiconv
