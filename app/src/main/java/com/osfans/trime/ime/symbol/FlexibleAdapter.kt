@@ -1,5 +1,6 @@
 package com.osfans.trime.ime.symbol
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ class FlexibleAdapter(
     val beans: List<DatabaseBean>
         get() = mBeans
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateBeans(beans: List<DatabaseBean>) {
         val sorted = beans.sortedWith { b1, b2 ->
             when {
@@ -45,6 +47,8 @@ class FlexibleAdapter(
         mBeans.forEachIndexed { index: Int, (id): DatabaseBean ->
             mBeansId[id] = index
         }
+        // 更新视图
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = mBeans.size
@@ -175,7 +179,6 @@ class FlexibleAdapter(
     private fun setPinStatus(id: Int, pinned: Boolean) {
         val position = mBeansId.getValue(id)
         mBeans[position] = mBeans[position].copy(pinned = pinned)
-        notifyItemChanged(position)
         // 置顶会改变条目的排列顺序
         updateBeans(mBeans)
     }

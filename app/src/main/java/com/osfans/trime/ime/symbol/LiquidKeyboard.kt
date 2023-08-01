@@ -23,12 +23,10 @@ import com.osfans.trime.ime.enums.KeyCommandType
 import com.osfans.trime.ime.enums.SymbolKeyboardType
 import com.osfans.trime.ime.text.TextInputManager
 import com.osfans.trime.util.dp2px
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class LiquidKeyboard(private val context: Context) {
+class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboardUpdateListener {
     private val theme: Theme = Theme.get()
     private val tabManager: TabManager = TabManager.get()
     private val service: Trime = Trime.getService()
@@ -102,18 +100,23 @@ class LiquidKeyboard(private val context: Context) {
                         }
                     }
                 } else {
-                    val tag = TabManager.getTag(position)
+                    val tag = tabManager.getTabSwitchTabTag(position)
+                    val truePosition = tabManager.getTabSwitchPosition(position)
+                    Timber.v(
+                        "TABS click: " +
+                            "position = $position, truePosition = $truePosition, tag.text = ${tag.text}",
+                    )
                     if (tag.type === SymbolKeyboardType.NO_KEY) {
                         when (tag.command) {
                             KeyCommandType.EXIT -> service.selectLiquidKeyboard(-1)
                             KeyCommandType.DEL_LEFT, KeyCommandType.DEL_RIGHT, KeyCommandType.REDO, KeyCommandType.UNDO -> {}
                             else -> {}
                         }
-                    } else if (tabManager.isAfterTabSwitch(position)) {
+                    } else if (tabManager.isAfterTabSwitch(truePosition)) {
                         // tab的位置在“更多”的右侧，不滚动tab，焦点仍然在”更多“上
-                        select(position)
+                        select(truePosition)
                     } else {
-                        service.selectLiquidKeyboard(position)
+                        service.selectLiquidKeyboard(truePosition)
                     }
                 }
             }
@@ -137,8 +140,10 @@ class LiquidKeyboard(private val context: Context) {
         when (tabTag.type) {
             SymbolKeyboardType.HISTORY ->
                 simpleAdapter.updateBeans(symbolHistory.toOrderedList().map(::SimpleKeyBean))
-            SymbolKeyboardType.TABS ->
+            SymbolKeyboardType.TABS -> {
                 simpleAdapter.updateBeans(tabManager.tabSwitchData)
+                Timber.v("All tags in TABS: tabManager.tabSwitchData = ${tabManager.tabSwitchData}")
+            }
             else ->
                 simpleAdapter.updateBeans(tabManager.select(i))
         }
@@ -209,7 +214,6 @@ class LiquidKeyboard(private val context: Context) {
                             else -> return
                         }
                     }
-                    notifyDataSetChanged()
                 }
 
                 override val showCollectButton: Boolean = type != SymbolKeyboardType.COLLECTION
@@ -225,27 +229,23 @@ class LiquidKeyboard(private val context: Context) {
         when (type) {
             SymbolKeyboardType.CLIPBOARD -> {
                 service.lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        dbAdapter.updateBeans(ClipboardHelper.getAll())
-                    }
+                    dbAdapter.updateBeans(ClipboardHelper.getAll())
                 }
             }
             SymbolKeyboardType.COLLECTION -> {
                 service.lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        dbAdapter.updateBeans(CollectionHelper.getAll())
-                    }
+                    dbAdapter.updateBeans(CollectionHelper.getAll())
                 }
             }
             SymbolKeyboardType.DRAFT -> {
                 service.lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        dbAdapter.updateBeans(DraftHelper.getAll())
-                    }
+                    dbAdapter.updateBeans(DraftHelper.getAll())
                 }
             }
             else -> return
         }
+        // 注册剪贴板更新监听器
+        ClipboardHelper.addOnUpdateListener(this)
     }
 
     private fun initCandidates() {
@@ -286,5 +286,23 @@ class LiquidKeyboard(private val context: Context) {
         candidateAdapter.updateCandidates(
             data.map { b -> CandidateListItem("", b.text) },
         )
+    }
+
+    /**
+     * 实现 OnClipboardUpdateListener 中的 onUpdate
+     * 当剪贴板内容变化且剪贴板视图处于开启状态时，更新视图.
+     */
+    override fun onUpdate(text: String) {
+        val selected = tabManager.selected
+        // 判断液体键盘视图是否已开启，-1为未开启
+        if (selected >= 0) {
+            val tag = TabManager.getTag(selected)
+            if (tag.type == SymbolKeyboardType.CLIPBOARD) {
+                Timber.v("OnClipboardUpdateListener onUpdate: update clipboard view")
+                service.lifecycleScope.launch {
+                    (keyboardView.adapter as FlexibleAdapter).updateBeans(ClipboardHelper.getAll())
+                }
+            }
+        }
     }
 }
