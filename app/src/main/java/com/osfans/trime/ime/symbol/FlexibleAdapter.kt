@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,8 @@ import com.osfans.trime.data.db.DatabaseBean
 import com.osfans.trime.data.theme.FontManager
 import com.osfans.trime.data.theme.Theme
 import com.osfans.trime.databinding.SimpleKeyItemBinding
+import com.osfans.trime.ime.core.Trime
+import com.osfans.trime.util.appContext
 import kotlinx.coroutines.launch
 
 class FlexibleAdapter(
@@ -25,6 +28,7 @@ class FlexibleAdapter(
 
     // 映射条目的 id 和其在视图中位置的关系
     // 以应对增删条目时 id 和其位置的相对变化
+    // [<id, position>, ...]
     private val mBeansId = mutableMapOf<Int, Int>()
     val beans: List<DatabaseBean>
         get() = mBeans
@@ -102,6 +106,15 @@ class FlexibleAdapter(
                     val menu = PopupMenu(it.context, it)
                     val scope = it.findViewTreeLifecycleOwner()!!.lifecycleScope
                     menu.menu.apply {
+                        add(R.string.edit).apply {
+                            setIcon(R.drawable.ic_baseline_edit_24)
+                            setOnMenuItemClickListener {
+                                scope.launch {
+                                    listener.onEdit(bean)
+                                }
+                                true
+                            }
+                        }
                         if (bean.pinned) {
                             add(R.string.simple_key_unpin).apply {
                                 setIcon(R.drawable.ic_outline_push_pin_24)
@@ -149,7 +162,7 @@ class FlexibleAdapter(
                                 setIcon(R.drawable.ic_baseline_delete_sweep_24)
                                 setOnMenuItemClickListener {
                                     scope.launch {
-                                        listener.onDeleteAll()
+                                        askToDeleteAll()
                                     }
                                     true
                                 }
@@ -183,12 +196,29 @@ class FlexibleAdapter(
         updateBeans(mBeans)
     }
 
+    private fun askToDeleteAll() {
+        val service = Trime.getService()
+        val askDialog = AlertDialog.Builder(
+            appContext,
+            androidx.appcompat.R.style.Theme_AppCompat_DayNight_Dialog_Alert,
+        ).setTitle(R.string.liquid_keyboard_ask_to_delete_all)
+            .setPositiveButton(R.string.ok) { dialog, which ->
+                service.lifecycleScope.launch {
+                    listener.onDeleteAll()
+                }
+            }.setNegativeButton(R.string.cancel) { dialog, which ->
+            }.create()
+        service.showDialogAboveInputView(askDialog)
+    }
+
     // 添加回调
     interface Listener {
         fun onPaste(bean: DatabaseBean)
         suspend fun onPin(bean: DatabaseBean)
         suspend fun onUnpin(bean: DatabaseBean)
         suspend fun onDelete(bean: DatabaseBean)
+
+        suspend fun onEdit(bean: DatabaseBean)
 
         suspend fun onDeleteAll()
 
