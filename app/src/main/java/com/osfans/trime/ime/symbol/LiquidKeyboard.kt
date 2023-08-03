@@ -35,18 +35,6 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
     private lateinit var keyboardView: RecyclerView
     private val symbolHistory = SymbolHistory(180)
 
-    private val flexbox: FlexboxLayoutManager by lazy {
-        return@lazy FlexboxLayoutManager(context).apply {
-            flexDirection = FlexDirection.ROW // 主轴为水平方向，起点在左端。
-            flexWrap = FlexWrap.WRAP // 按正常方向换行
-            justifyContent = JustifyContent.FLEX_START // 交叉轴的起点对齐
-        }
-    }
-
-    private val oneColumnStaggeredGrid: StaggeredGridLayoutManager by lazy {
-        return@lazy StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
-    }
-
     fun setKeyboardView(view: RecyclerView) {
         keyboardView = view
         keyboardView.apply {
@@ -54,6 +42,28 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             addItemDecoration(SpacesItemDecoration(space))
             setPadding(space)
         }
+    }
+
+// 及时更新layoutManager, 以防在旋转屏幕后打开液体键盘crash
+    /**
+     * 使用FlexboxLayoutManager时调用此函数获取
+     */
+    private fun getFlexbox(): FlexboxLayoutManager {
+        return FlexboxLayoutManager(context).apply {
+            flexDirection = FlexDirection.ROW // 主轴为水平方向，起点在左端。
+            flexWrap = FlexWrap.WRAP // 按正常方向换行
+            justifyContent = JustifyContent.FLEX_START // 交叉轴的起点对齐
+        }
+    }
+
+    /**
+     * 使用StaggeredGridLayoutManager时调用此函数获取
+     */
+    private fun getOneColumnStaggeredGrid(): StaggeredGridLayoutManager {
+        return StaggeredGridLayoutManager(
+            1,
+            StaggeredGridLayoutManager.VERTICAL,
+        )
     }
 
     fun select(i: Int): SymbolKeyboardType {
@@ -124,7 +134,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             }
         }
         keyboardView.apply {
-            layoutManager = flexbox
+            layoutManager = getFlexbox()
             /*
             Timber.d(
                 "configStylet() single_width=%s, keyHeight=%s, margin_x=%s, margin_top=%s",
@@ -226,7 +236,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             })
         }
         keyboardView.apply {
-            layoutManager = oneColumnStaggeredGrid
+            layoutManager = getOneColumnStaggeredGrid()
             adapter = dbAdapter
             // 调用ListView的setSelected(!ListView.isSelected())方法，这样就能及时刷新布局
             isSelected = true
@@ -268,7 +278,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
         }
         // 设置布局管理器
         keyboardView.apply {
-            layoutManager = flexbox
+            layoutManager = getFlexbox()
             adapter = candidateAdapter
             isSelected = true
         }
@@ -285,7 +295,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
         }
         // 设置布局管理器
         keyboardView.apply {
-            layoutManager = flexbox
+            layoutManager = getFlexbox()
             adapter = candidateAdapter
             keyboardView.isSelected = true
         }
