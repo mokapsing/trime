@@ -418,6 +418,8 @@ public class Trime extends LifecycleInputMethodService {
       }
     } else {
       symbolKeyboardType = SymbolKeyboardType.NO_KEY;
+      // 设置液体键盘处于隐藏状态
+      TabManager.get().setTabExited();
       symbolInput.setVisibility(View.GONE);
     }
     updateComposing();
@@ -602,9 +604,13 @@ public class Trime extends LifecycleInputMethodService {
   }
 
   private void handleReturnKey() {
-    if (editorInfo == null) sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+    if (editorInfo == null) {
+      sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+      return;
+    }
     if ((editorInfo.inputType & InputType.TYPE_MASK_CLASS) == InputType.TYPE_NULL) {
       sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+      return;
     }
     if (BitFlagsKt.hasFlag(editorInfo.imeOptions, EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
       final InputConnection ic = getCurrentInputConnection();
@@ -1191,7 +1197,7 @@ public class Trime extends LifecycleInputMethodService {
           mComposition.setWindow();
           showCompositionView(false);
         } else {
-          mComposition.getRootView().setVisibility(View.VISIBLE);
+          mComposition.setVisibility(View.VISIBLE);
           startNum = mComposition.setWindow(minPopupSize, minPopupCheckSize, Integer.MAX_VALUE);
           mCandidate.setText(startNum);
           // if isCursorUpdated, showCompositionView will be called in onUpdateCursorAnchorInfo
