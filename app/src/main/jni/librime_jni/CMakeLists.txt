@@ -31,7 +31,8 @@ execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/librime/.git describe --tags
   OUTPUT_VARIABLE LIBRIME_VERSION
 )
-string(STRIP ${LIBRIME_VERSION} LIBRIME_VERSION)
+# string(STRIP ${LIBRIME_VERSION} LIBRIME_VERSION)
+set(LIBRIME_VERSION "1.8.5-dev")
 set(LIBRIME_VERSION "${LIBRIME_VERSION}-${ANDROID_ABI}")
 
 target_compile_definitions(rime_jni PRIVATE
