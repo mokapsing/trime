@@ -14,22 +14,16 @@ option(BUILD_TESTING "" OFF)
 # iconv for Boost::locale
 include(Iconv)
 # workaround for boost install
-install(TARGETS iconv EXPORT boost_locale-targets
-  ARCHIVE DESTINATION dummy # remove this line after cmake >= 3.18
-)
+install(TARGETS iconv EXPORT boost_locale-targets)
 
-option(BOOST_FILESYSTEM_DISABLE_STATX "" ON) # remove this option after targetSdkVersion >= 30
 add_subdirectory(boost)
 
-option(EXTERNAL_CAPNP "" ON)
-option(CAPNP_LITE "" ON) # librime only needs CapnProto::capnp
-add_subdirectory(capnproto)
-include(CapnprotoWorkarounds)
-
-#add_subdirectory(glog)
+option(WITH_GFLAGS "Use gflags" OFF)
+option(WITH_GTEST "Use googletest" OFF)
+option(WITH_UNWIND "Enable libunwind support" OFF)
+add_subdirectory(librime/deps/glog)
 
 option(YAML_CPP_BUILD_TOOLS "" OFF)
-# TODO: remove below options after librime > 1.7.3
 option(YAML_CPP_BUILD_TESTS "" OFF)
 option(YAML_CPP_INSTALL "" OFF)
 add_subdirectory(librime/deps/yaml-cpp)
@@ -46,16 +40,17 @@ option(LEVELDB_BUILD_BENCHMARKS "" OFF)
 option(LEVELDB_INSTALL "" OFF)
 add_subdirectory(librime/deps/leveldb)
 
-# TODO: use librime/thirdparty/src/opencc instead after librime > 1.7.3
 add_subdirectory(OpenCC)
 include(OpenccWorkarounds)
 
 include(RimePlugins)
 
 option(BUILD_TEST "" OFF)
-option(ENABLE_LOGGING "" OFF)
-include_directories("librime/include") # for X11/keysym.h
-include_directories("capnproto/c++/src")
+include_directories(
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/librime/include"
+    PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/librime/deps/glog"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/librime/deps/glog/src"
+)
 # workaround for librime/tools/rime_api_console.cc
 # TODO: fix it in upstream
 string(REPLACE "-Werror=format-security" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
