@@ -27,3 +27,6 @@
 [submodule "librime-charcode"]
 	path = app/src/main/jni/librime-charcode
 	url = https://github.com/rime/librime-charcode
+[submodule "app/src/main/jni/librime"]
+	path = app/src/main/jni/librime
+	url = https://github.com/mokapsing/librime.git
