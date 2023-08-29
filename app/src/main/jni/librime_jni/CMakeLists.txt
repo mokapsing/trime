@@ -18,7 +18,8 @@ execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/../../../../.git describe --tags
   OUTPUT_VARIABLE TRIME_VERSION
 )
-string(STRIP ${TRIME_VERSION} TRIME_VERSION)
+#string(STRIP ${TRIME_VERSION} TRIME_VERSION)
+set(TRIME_VERSION "3.2.8-renew")
 set(TRIME_VERSION "${TRIME_VERSION}-${TODAY}")
 
 execute_process(
