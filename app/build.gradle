@@ -75,7 +75,7 @@ android {
         cmake {
             // TODO: upgrade to 3.18
             // see https://issuetracker.google.com/issues/187134648
-            version "3.10.2"
+            version "3.22.1"
         }
     }
 
