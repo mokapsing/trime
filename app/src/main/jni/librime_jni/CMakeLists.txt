@@ -18,8 +18,8 @@ execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/../../../../.git describe --tags
   OUTPUT_VARIABLE TRIME_VERSION
 )
-string(STRIP ${TRIME_VERSION} TRIME_VERSION)
-set(TRIME_VERSION "${TRIME_VERSION}-${TODAY}")
+#string(STRIP ${TRIME_VERSION} TRIME_VERSION)
+set(TRIME_VERSION "3.2.8-renew-${TODAY}")
 
 execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/OpenCC/.git describe --tags
@@ -31,8 +31,8 @@ execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/librime/.git describe --tags
   OUTPUT_VARIABLE LIBRIME_VERSION
 )
-string(STRIP ${LIBRIME_VERSION} LIBRIME_VERSION)
-set(LIBRIME_VERSION "${LIBRIME_VERSION}-${ANDROID_ABI}")
+#string(STRIP ${LIBRIME_VERSION} LIBRIME_VERSION)
+set(LIBRIME_VERSION "1.7.3-dev-${ANDROID_ABI}")
 
 target_compile_definitions(rime_jni PRIVATE
   CLASSNAME="com/osfans/trime/core/Rime"
