@@ -67,6 +67,7 @@ public class Composition extends AppCompatTextView {
   private SpannableStringBuilder ss;
   private final int span = 0;
   private String movable;
+  private boolean touchable;
   private final int[] move_pos = new int[2];
   private boolean first_move = true;
   private float mDx, mDy;
@@ -174,7 +175,7 @@ public class Composition extends AppCompatTextView {
     int action = event.getAction();
     if (action == MotionEvent.ACTION_UP) {
       int n = getOffsetForPosition(event.getX(), event.getY());
-      if (composition_pos[0] <= n && n <= composition_pos[1]) {
+      if (touchable && composition_pos[0] <= n && n <= composition_pos[1]) {
         String s =
             getText().toString().substring(n, composition_pos[1]).replace(" ", "").replace("‸", "");
         n = Rime.RimeGetInput().length() - s.length(); // 從右側定位
@@ -261,6 +262,7 @@ public class Composition extends AppCompatTextView {
     sticky_lines = config.getInt("layout/sticky_lines");
     sticky_lines_land = config.getInt("layout/sticky_lines_land");
     movable = config.getString("layout/movable");
+    touchable = config.getBoolean("layout/touchable");
     all_phrases = config.getBoolean("layout/all_phrases");
     tfLabel = config.getFont("label_font");
     tfText = config.getFont("text_font");
