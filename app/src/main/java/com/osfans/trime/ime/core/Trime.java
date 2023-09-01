@@ -470,7 +470,7 @@ public class Trime extends LifecycleInputMethodService {
         tabView.updateTabWidth();
         if (inputRootBinding != null) {
           mTabRoot.setBackground(mCandidateRoot.getBackground());
-          mTabRoot.move(tabView.getHightlightLeft(), tabView.getHightlightRight());
+          .move(tabView.getHightlightLeft(), tabView.getHightlightRight());
         }
       } else {
         symbolKeyboardType = SymbolKeyboardType.NO_KEY;
@@ -1427,10 +1427,10 @@ public class Trime extends LifecycleInputMethodService {
     if (w == null) return;
     final LinearLayout inputRoot = inputRootBinding != null ? inputRootBinding.inputRoot : null;
     if (inputRoot != null) {
-      final int layoutHeight =
-          isFullscreenMode()
-              ? WindowManager.LayoutParams.WRAP_CONTENT
-              : WindowManager.LayoutParams.MATCH_PARENT;
+      final int layoutHeight = 200;
+      //    isFullscreenMode()
+      //        ? WindowManager.LayoutParams.WRAP_CONTENT
+      //        : WindowManager.LayoutParams.MATCH_PARENT;
       final View inputArea = w.findViewById(android.R.id.inputArea);
       // TODO: 需要获取到文本编辑框、完成按钮，设置其色彩和尺寸。
       if (isFullscreenMode()) {
