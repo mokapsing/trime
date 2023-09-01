@@ -128,6 +128,7 @@
     <string name="delete">Delete</string>
     <string name="collect">Collect</string>
     <string name="liquid_keyboard_search_hint">Search ( comming soon )</string>
+    <string name="other__draft_exclude_app_title">Apps not save draft (package name)</string>
     <string-array name="other__clipboard_manager_entries" >
         <item name="0">Disable</item>
         <item name="20">20</item>
