@@ -64,7 +64,7 @@ public class Composition extends AppCompatTextView {
   private int max_entries = Candidate.getMaxCandidateCount();
   private boolean candidate_use_cursor, show_comment;
   private int highlightIndex;
-  private List<Map<String, Object>> windows_comps;
+  private List<Map<String, Object>> windows_comps, liquid_keyboard_window_comp;
   private SpannableStringBuilder ss;
   private final int span = 0;
   private String movable;
