@@ -161,8 +161,15 @@ public class LiquidKeyboard {
     if (keyboardBackground != null) parentView.setBackground(keyboardBackground);
 
     int keyboardHeight = config.getPixel("keyboard_height");
+    if (keyboardHeight <= 0) {
+      keyboardHeight = config.getPixel("liquid_keyboard_height");
+    }
+
     if (isLand) {
       int keyBoardHeightLand = config.getPixel("keyboard_height_land");
+      if (keyBoardHeightLand <= 0) {
+        keyBoardHeightLand = config.getPixel("liquid_keyboard_height_land");
+      }
       if (keyBoardHeightLand > 0) keyboardHeight = keyBoardHeightLand;
     }
 
