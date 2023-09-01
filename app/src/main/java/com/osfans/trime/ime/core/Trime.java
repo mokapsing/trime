@@ -470,7 +470,7 @@ public class Trime extends LifecycleInputMethodService {
         tabView.updateTabWidth();
         if (inputRootBinding != null) {
           mTabRoot.setBackground(mCandidateRoot.getBackground());
-          .move(tabView.getHightlightLeft(), tabView.getHightlightRight());
+          mTabRoot.move(tabView.getHightlightLeft(), tabView.getHightlightRight());
         }
       } else {
         symbolKeyboardType = SymbolKeyboardType.NO_KEY;
