@@ -122,6 +122,12 @@
     <string name="other__clipboard_compare_title">剪貼板去重規則(每行爲一條正則規則)</string>
     <string name="other__clipboard_output_title">剪貼板過濾規則(每行爲一條正則規則)</string>
     <string name="other__clipboard_manager_summary">保存剪貼板內容的數量</string>
+    <string name="other__list_clipboard_title">剪貼板內容</string>
+    <string name="other__list_draft_title">草稿箱內容</string>
+    <string name="other__list_collection_title">收藏夾內容</string>
+    <string name="delete">刪除</string>
+    <string name="collect">收藏</string>
+    <string name="liquid_keyboard_search_hint">搜索(暫未實現)</string>
     <string-array name="other__clipboard_manager_entries" >
         <item name="0">停用</item>
         <item name="20">20</item>
