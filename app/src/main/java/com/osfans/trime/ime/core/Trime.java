@@ -58,10 +58,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.blankj.utilcode.util.BarUtils;
+import com.osfans.trime.BuildConfig;
 import com.osfans.trime.R;
 import com.osfans.trime.core.Rime;
 import com.osfans.trime.data.AppPrefs;
 import com.osfans.trime.data.Config;
+import com.osfans.trime.data.db.CollectionDao;
 import com.osfans.trime.data.db.clipboard.ClipboardDao;
 import com.osfans.trime.data.db.draft.DraftDao;
 import com.osfans.trime.databinding.CompositionRootBinding;
@@ -237,9 +239,7 @@ public class Trime extends LifecycleInputMethodService {
       };
 
   @Synchronized
-  @NonNull
   public static Trime getService() {
-    assert self != null;
     return self;
   }
 
@@ -254,6 +254,16 @@ public class Trime extends LifecycleInputMethodService {
           msg -> {
             if (!((Trime) msg.obj).isShowInputRequested()) { // 若当前没有输入面板，则后台同步。防止面板关闭后5秒内再次打开
               ShortcutUtils.INSTANCE.syncInBackground((Trime) msg.obj);
+              ((Trime) msg.obj).loadConfig();
+            }
+            return false;
+          });
+
+  private static final Handler writeUserDataHandler =
+      new Handler(
+          msg -> {
+            if (!((Trime) msg.obj).isShowInputRequested()) { // 若当前没有输入面板，则后台同步。防止面板关闭后5秒内再次打开
+              ShortcutUtils.INSTANCE.writeUserData((Trime) msg.obj);
               ((Trime) msg.obj).loadConfig();
             }
             return false;
@@ -305,6 +315,10 @@ public class Trime extends LifecycleInputMethodService {
       final Message msg = new Message();
       msg.obj = this;
       syncBackgroundHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
+    } else {
+      final Message msg = new Message();
+      msg.obj = this;
+      writeUserDataHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
     }
 
     Timber.d(methodName + "eventListeners");
@@ -391,6 +405,7 @@ public class Trime extends LifecycleInputMethodService {
             new LiquidKeyboard(
                 this, getImeConfig().getClipboardLimit(), getImeConfig().getDraftLimit());
         clipBoardMonitor();
+        CollectionDao.get();
         DraftDao.get();
       } catch (Exception e) {
         e.printStackTrace();
@@ -426,6 +441,16 @@ public class Trime extends LifecycleInputMethodService {
 
   private SymbolKeyboardType symbolKeyboardType = SymbolKeyboardType.NO_KEY;
 
+  public void inputSymbol(final String text) {
+    textInputManager.onPress(KeyEvent.KEYCODE_UNKNOWN);
+    if (Rime.isAsciiMode()) Rime.setOption("ascii_mode", false);
+    boolean asciiPunch = Rime.isAsciiPunch();
+    if (asciiPunch) Rime.setOption("ascii_punct", false);
+    textInputManager.onText("{Escape}" + text);
+    if (asciiPunch) Rime.setOption("ascii_punct", true);
+    Trime.getService().selectLiquidKeyboard(-1);
+  }
+
   public void selectLiquidKeyboard(final int tabIndex) {
     final LinearLayout symbolInputView =
         inputRootBinding != null ? inputRootBinding.symbol.symbolInput : null;
@@ -459,7 +484,7 @@ public class Trime extends LifecycleInputMethodService {
 
   // 按键需要通过tab name来打开liquidKeyboard的指定tab
   public void selectLiquidKeyboard(@NonNull String name) {
-    if (name.matches("\\d+")) selectLiquidKeyboard(Integer.parseInt(name));
+    if (name.matches("-?\\d+")) selectLiquidKeyboard(Integer.parseInt(name));
     else if (name.matches("[A-Z]+")) selectLiquidKeyboard(SymbolKeyboardType.valueOf(name));
     else selectLiquidKeyboard(TabManager.getTagIndex(name));
   }
@@ -497,8 +522,8 @@ public class Trime extends LifecycleInputMethodService {
     }
   }
 
-  private void showCompositionView() {
-    if (TextUtils.isEmpty(Rime.getCompositionText())) {
+  private void showCompositionView(boolean isCandidate) {
+    if (TextUtils.isEmpty(Rime.getCompositionText()) && isCandidate) {
       hideCompositionView();
       return;
     }
@@ -692,7 +717,7 @@ public class Trime extends LifecycleInputMethodService {
       cursorAnchorInfo.getMatrix().mapRect(mPopupRectF);
     }
     if (mCandidateRoot != null) {
-      showCompositionView();
+      showCompositionView(true);
     }
   }
 
@@ -769,7 +794,7 @@ public class Trime extends LifecycleInputMethodService {
   }
 
   public void setShowComment(boolean show_comment) {
-    // if (mCandidateRoot != null) mCandidate.setShowComment(show_comment);
+    if (mCandidateRoot != null) mCandidate.setShowComment(show_comment);
     mComposition.setShowComment(show_comment);
   }
 
@@ -852,7 +877,12 @@ public class Trime extends LifecycleInputMethodService {
         if ((attribute.imeOptions & EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING)
             == EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING) {
           //  应用程求以隐身模式打开键盘应用程序
+          normalTextEditor = false;
           Timber.i("EditorInfo: normal -> private, IME_FLAG_NO_PERSONALIZED_LEARNING");
+        } else if (attribute.packageName.equals(BuildConfig.APPLICATION_ID)
+            || getPrefs().getOther().getDraftExcludeApp().contains(attribute.packageName)) {
+          normalTextEditor = false;
+          Timber.i("EditorInfo: normal -> exclude, packageName=" + attribute.packageName);
         } else {
           normalTextEditor = true;
           activeEditorInstance.cacheDraft();
@@ -863,7 +893,10 @@ public class Trime extends LifecycleInputMethodService {
 
   @Override
   public void onFinishInputView(boolean finishingInput) {
-    if (normalTextEditor) addDraft();
+    if (normalTextEditor) {
+      activeEditorInstance.cacheDraft();
+      addDraft();
+    }
     super.onFinishInputView(finishingInput);
     // Dismiss any pop-ups when the input-view is being finished and hidden.
     mainKeyboardView.closing();
@@ -1207,14 +1240,15 @@ public class Trime extends LifecycleInputMethodService {
         Timber.d("updateComposing() SymbolKeyboardType=%s", symbolKeyboardType.toString());
         if (symbolKeyboardType != SymbolKeyboardType.NO_KEY
             && symbolKeyboardType != SymbolKeyboardType.CANDIDATE) {
-          mComposition.getRootView().setVisibility(View.GONE);
+          mComposition.setWindow();
+          showCompositionView(false);
+          return 0;
         } else {
-          mComposition.getRootView().setVisibility(View.VISIBLE);
           startNum = mComposition.setWindow(minPopupSize, minPopupCheckSize, Integer.MAX_VALUE);
           mCandidate.setText(startNum);
           // if isCursorUpdated, showCompositionView will be called in onUpdateCursorAnchorInfo
           // otherwise we need to call it here
-          if (!isCursorUpdated) showCompositionView();
+          if (!isCursorUpdated) showCompositionView(true);
         }
       } else {
         mCandidate.setText(0);
@@ -1230,8 +1264,6 @@ public class Trime extends LifecycleInputMethodService {
     if (symbolKeyboardType == SymbolKeyboardType.CANDIDATE) {
       if (isComposing()) {
         liquidKeyboard.updateCandidates();
-      } else {
-        selectLiquidKeyboard(-1);
       }
     }
 

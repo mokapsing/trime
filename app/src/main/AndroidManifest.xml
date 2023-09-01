@@ -64,6 +64,10 @@
             android:launchMode="singleTask"
             android:parentActivityName=".settings.PrefMainActivity" />
 
+        <activity
+            android:name=".ui.main.LiquidKeyboardActivity"
+            android:parentActivityName=".ui.main.PrefMainActivity"
+            />
         <!-- Using an activity alias to disable/enable the app icon in the launcher -->
         <activity-alias
             android:name="com.osfans.trime.PrefLauncherAlias"

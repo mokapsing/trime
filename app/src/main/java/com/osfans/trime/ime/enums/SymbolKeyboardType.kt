@@ -16,6 +16,9 @@ enum class SymbolKeyboardType {
     //  剪贴板（大段文本自动缩略，按键长度自适应。）
     CLIPBOARD,
 
+    //  收藏的文本, 复用剪贴板
+    COLLECTION,
+
     //  文本框编辑历史，即“草稿箱”
     DRAFT,
 
@@ -29,6 +32,9 @@ enum class SymbolKeyboardType {
 
     //  按键使用固定宽度。单个字符即按键。SINGLE是默认类型的按键
     SINGLE,
+
+    //  模拟输入符号表的动作，点击后跳转回主键盘
+    SYMBOL,
 
     //  按键使用固定宽度。如不设置宽度，则自动换行
     SHORT,
