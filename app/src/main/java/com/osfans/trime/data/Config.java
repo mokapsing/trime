@@ -377,7 +377,7 @@ public class Config {
       Timber.d("init() finins");
     } catch (Exception e) {
       e.printStackTrace();
-      setTheme(defaultName);
+      if (!themeName.equals(defaultName)) setTheme(defaultName);
     }
   }
 
