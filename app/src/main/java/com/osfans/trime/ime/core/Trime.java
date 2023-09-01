@@ -258,7 +258,7 @@ public class Trime extends LifecycleInputMethodService {
             }
             return false;
           });
-  
+
   private static final Handler writeUserDataHandler =
       new Handler(
           msg -> {
