@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.forEach
-import androidx.preference.Preference
 import androidx.preference.ListPreference
-import com.blankj.utilcode.util.ToastUtils
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.blankj.utilcode.util.ToastUtils
 import com.osfans.trime.R
 import com.osfans.trime.data.AppPrefs
 import com.osfans.trime.data.Config
