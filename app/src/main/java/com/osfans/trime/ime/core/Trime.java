@@ -918,7 +918,9 @@ public class Trime extends LifecycleInputMethodService {
   private boolean handleBack(int keyCode) {
     if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
       requestHideSelf(0);
-      Rime.finalize1();
+      Rime.destroy();
+      getImeConfig().destroy();
+      System.exit(0); // 清理內存
       return true;
     }
     return false;
