@@ -460,7 +460,7 @@ public class Trime extends LifecycleInputMethodService {
       if (tabIndex >= 0) {
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        param.height = 200; //mainInputView.getHeight();
+        param.height = 200; // mainInputView.getHeight();
         symbolInputView.setVisibility(View.VISIBLE);
 
         final int orientation = getResources().getConfiguration().orientation;
