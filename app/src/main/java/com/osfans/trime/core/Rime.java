@@ -691,6 +691,12 @@ public class Rime {
     return b;
   }
 
+  public static boolean saveUserData(Context context) {
+    destroy();
+    get(context, true);
+    return true;
+  }
+
   // init
   public static native void setup(String shared_data_dir, String user_data_dir);
 

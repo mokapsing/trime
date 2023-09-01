@@ -128,6 +128,10 @@ object ShortcutUtils {
         prefs.conf.lastSyncStatus = Rime.syncUserData(context)
     }
 
+    fun writeUserData(context: Context) {
+        Rime.saveUserData(context)
+    }
+
     fun openCategory(keyCode: Int): Boolean {
         val category = applicationLaunchKeyCategories[keyCode]
         return if (category != null) {
