@@ -16,8 +16,8 @@ import com.blankj.utilcode.util.ToastUtils
 import com.osfans.trime.R
 import com.osfans.trime.data.AppPrefs
 import com.osfans.trime.data.Config
-import com.osfans.trime.ui.main.LiquidKeyboardActivity
 import com.osfans.trime.ime.core.Trime
+import com.osfans.trime.ui.main.LiquidKeyboardActivity
 
 class OtherFragment :
     PreferenceFragmentCompat(),
