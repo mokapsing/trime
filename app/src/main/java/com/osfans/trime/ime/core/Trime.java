@@ -160,6 +160,7 @@ public class Trime extends LifecycleInputMethodService {
   private PositionType popupWindowPos; // 悬浮窗口彈出位置
   private PopupWindow mPopupWindow;
   private RectF mPopupRectF = new RectF();
+  private boolean isConfigLoaded = false;
   private final Handler mPopupHandler = new Handler(Looper.getMainLooper());
   private final Runnable mPopupTimer =
       new Runnable() {
@@ -361,6 +362,7 @@ public class Trime extends LifecycleInputMethodService {
     isPopupWindowEnabled =
         getPrefs().getKeyboard().getPopupWindowEnabled() && imeConfig.hasKey("window");
     textInputManager.setShouldUpdateRimeOption(true);
+    isConfigLoaded = true;
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -466,7 +468,9 @@ public class Trime extends LifecycleInputMethodService {
         final int orientation = getResources().getConfiguration().orientation;
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        loadConfig();
+        if (!isConfigLoaded) {
+          loadConfig();
+        }
         int lq_height =
             SizeUtils.dp2px(
                 ((orientation == Configuration.ORIENTATION_LANDSCAPE)
