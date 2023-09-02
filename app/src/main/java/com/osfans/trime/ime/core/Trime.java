@@ -58,6 +58,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.blankj.utilcode.util.BarUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.osfans.trime.BuildConfig;
 import com.osfans.trime.R;
 import com.osfans.trime.core.Rime;
@@ -130,6 +131,9 @@ public class Trime extends LifecycleInputMethodService {
   public CopyOnWriteArrayList<EventListener> eventListeners = new CopyOnWriteArrayList<>();
   public InputMethodManager imeManager = null;
   public InputFeedbackManager inputFeedbackManager = null; // 效果管理器
+  private int liquid_keyboard_height; // 液体键盘固定高度
+  private int liquid_keyboard_height_land; // 液体键盘竖屏固定高度
+  private boolean isLiquidkeyboardHeightLoaded = false; // 避免重复读取液体键盘高度，读取过之后不再读取
   private IntentReceiver mIntentReceiver = null;
 
   private boolean isWindowShown = false; // 键盘窗口是否已显示
@@ -343,6 +347,13 @@ public class Trime extends LifecycleInputMethodService {
     mPopupWindow.update(popupWindowX, popupWindowY, -1, -1, true);
   }
 
+  public void loadLiquidKeyboardHeight() {
+    final Config imeConfig = getImeConfig();
+    liquid_keyboard_height = imeConfig->getInt("liquid_keyboard_height");
+    liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
+    isLiquidkeyboardHeightLoaded = true;
+  }
+
   public void loadConfig() {
     final Config imeConfig = getImeConfig();
     popupWindowPos = imeConfig.getWinPos();
@@ -356,6 +367,9 @@ public class Trime extends LifecycleInputMethodService {
     isPopupWindowEnabled =
         getPrefs().getKeyboard().getPopupWindowEnabled() && imeConfig.hasKey("window");
     textInputManager.setShouldUpdateRimeOption(true);
+    if (!isLiquidkeyboardHeightLoaded) {
+      loadLiquidKeyboardHeight();
+    }
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -460,10 +474,20 @@ public class Trime extends LifecycleInputMethodService {
       if (tabIndex >= 0) {
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        param.height = mainInputView.getHeight();
-        symbolInputView.setVisibility(View.VISIBLE);
-
         final int orientation = getResources().getConfiguration().orientation;
+        if (!isLiquidkeyboardHeightLoaded) {
+          loadLiquidKeyboardHeight();
+        }
+        int LiquidKeyboardHeight =
+            SizeUtils.dp2px(
+                ((orientation == Configuration.ORIENTATION_LANDSCAPE)
+                    ? liquid_keyboard_height_land
+                    : liquid_keyboard_height));
+        if (LiquidKeyboardHeight <= 0) {
+          LiquidKeyboardHeight = mainInputView.getHeight();
+        }
+        param.height = LiquidKeyboardHeight;
+        symbolInputView.setVisibility(View.VISIBLE);
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
         liquidKeyboard.calcPadding(mainInputView.getWidth());
         symbolKeyboardType = liquidKeyboard.select(tabIndex);
@@ -611,6 +635,7 @@ public class Trime extends LifecycleInputMethodService {
     if (symbolInputView != null) symbolInputView.setVisibility(View.GONE);
     if (mainInputView != null) mainInputView.setVisibility(View.VISIBLE);
     getImeConfig().reset();
+    isLiquidkeyboardHeightLoaded = false;
     loadConfig();
     getImeConfig().initCurrentColors();
     getImeConfig().setSoundFromColor();
@@ -633,6 +658,7 @@ public class Trime extends LifecycleInputMethodService {
   public void initKeyboardDarkMode(boolean darkMode) {
     if (getImeConfig().hasDarkLight()) {
       getImeConfig().reset();
+      isLiquidkeyboardHeightLoaded = false;
       loadConfig();
       getImeConfig().initCurrentColors(darkMode);
       getImeConfig().setSoundFromColor();
