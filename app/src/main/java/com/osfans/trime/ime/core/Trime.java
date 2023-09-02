@@ -349,7 +349,7 @@ public class Trime extends LifecycleInputMethodService {
 
   public void loadLiquidKeyboardHeight() {
     final Config imeConfig = getImeConfig();
-    liquid_keyboard_height = imeConfig->getInt("liquid_keyboard_height");
+    liquid_keyboard_height = imeConfig.getInt("liquid_keyboard_height");
     liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
     isLiquidkeyboardHeightLoaded = true;
   }
