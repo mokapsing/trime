@@ -466,6 +466,7 @@ public class Trime extends LifecycleInputMethodService {
         final int orientation = getResources().getConfiguration().orientation;
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
+        loadConfig();
         int lq_height =
             SizeUtils.dp2px(
                 ((orientation == Configuration.ORIENTATION_LANDSCAPE)
