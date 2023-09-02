@@ -484,7 +484,7 @@ public class Trime extends LifecycleInputMethodService {
         symbolInputView.setVisibility(View.VISIBLE);
 
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
-        liquidKeyboard.calcPadding(mainInputView.getWidth());
+        // liquidKeyboard.calcPadding(mainInputView.getWidth());
         symbolKeyboardType = liquidKeyboard.select(tabIndex);
         tabView.updateTabWidth();
         if (inputRootBinding != null) {
