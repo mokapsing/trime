@@ -58,6 +58,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.blankj.utilcode.util.BarUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.osfans.trime.BuildConfig;
 import com.osfans.trime.R;
 import com.osfans.trime.core.Rime;
@@ -454,13 +455,13 @@ public class Trime extends LifecycleInputMethodService {
   public void selectLiquidKeyboard(final int tabIndex) {
     final LinearLayout symbolInputView =
         inputRootBinding != null ? inputRootBinding.symbol.symbolInput : null;
-    final LinearLayout mainInputView = null;
-    //    inputRootBinding != null ? inputRootBinding.main.mainInput : null;
+    final LinearLayout mainInputView =
+        inputRootBinding != null ? inputRootBinding.main.mainInput : null;
     if (symbolInputView != null) {
       if (tabIndex >= 0) {
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        param.height = 600; // mainInputView.getHeight();
+        param.height = SizeUtils.dp2px(200); // mainInputView.getHeight();
         symbolInputView.setVisibility(View.VISIBLE);
 
         final int orientation = getResources().getConfiguration().orientation;
