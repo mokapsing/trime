@@ -478,18 +478,19 @@ public class Trime extends LifecycleInputMethodService {
         if (!isLiquidkeyboardHeightLoaded) {
           loadLiquidKeyboardHeight();
         }
-        int LiquidKeyboardHeight =
-            SizeUtils.dp2px(
-                ((orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    ? liquid_keyboard_height_land
-                    : liquid_keyboard_height));
-        if (LiquidKeyboardHeight <= 0) {
-          LiquidKeyboardHeight = mainInputView.getHeight();
+        final int LiquidKeyboardHeight =
+            ((orientation == Configuration.ORIENTATION_LANDSCAPE)
+                ? liquid_keyboard_height_land
+                : liquid_keyboard_height));
+        int LiquidKeyboardHeightPx =  SizeUtils.dp2px(LiquidKeyboardHeight);
+        if (mainInputView.getHeight() > LiquidKeyboardHeightPx) {
+          LiquidKeyboardHeightPx = mainInputView.getHeight();
+          LiquidKeyboardHeight = SizeUtils.px2dp(LiquidKeyboardHeightPx);
         }
-        param.height = LiquidKeyboardHeight;
+        param.height = LiquidKeyboardHeightPx;
         symbolInputView.setVisibility(View.VISIBLE);
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
-        liquidKeyboard.calcPadding(mainInputView.getWidth());
+        liquidKeyboard.calcPadding(LiquidKeyboardHeight, mainInputView.getWidth());
         symbolKeyboardType = liquidKeyboard.select(tabIndex);
         tabView.updateTabWidth();
         if (inputRootBinding != null) {
