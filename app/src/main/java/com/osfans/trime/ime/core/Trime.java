@@ -149,6 +149,8 @@ public class Trime extends LifecycleInputMethodService {
 
   private boolean isPopupWindowEnabled = true; // 顯示懸浮窗口
   private String isPopupWindowMovable; // 悬浮窗口是否可移動
+  private int liquid_keyboard_height; // 液体键盘固定高度
+  private int liquid_keyboard_height_land; // 液体键盘竖屏固定高度
   private int popupWindowX, popupWindowY; // 悬浮床移动座標
   private int popupMargin; // 候選窗與邊緣空隙
   private int popupMarginH; // 悬浮窗与屏幕两侧的间距
@@ -354,6 +356,8 @@ public class Trime extends LifecycleInputMethodService {
     popupMarginH = imeConfig.getPixel("layout/real_margin");
     textInputManager.setShouldResetAsciiMode(imeConfig.getBoolean("reset_ascii_mode"));
     isAutoCaps = imeConfig.getBoolean("auto_caps");
+    liquid_keyboard_height = imeConfig.getInt("liquid_keyboard_height");
+    liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
     isPopupWindowEnabled =
         getPrefs().getKeyboard().getPopupWindowEnabled() && imeConfig.hasKey("window");
     textInputManager.setShouldUpdateRimeOption(true);
@@ -459,12 +463,17 @@ public class Trime extends LifecycleInputMethodService {
         inputRootBinding != null ? inputRootBinding.main.mainInput : null;
     if (symbolInputView != null) {
       if (tabIndex >= 0) {
+        final int orientation = getResources().getConfiguration.orientation;
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        param.height = SizeUtils.dp2px(200); // mainInputView.getHeight();
+        int lq_height = SizeUtils.dp2px(((orientation == Configuration.ORIENTATION_LANDSCAPE) ? liquid_keyboard_height_land : liquid_keyboard_height));
+        if (lq_height <= 0) {
+          lq_height = mainInputView.getHeight();
+        }
+
+        param.height = lq_height;
         symbolInputView.setVisibility(View.VISIBLE);
 
-        final int orientation = getResources().getConfiguration().orientation;
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
         liquidKeyboard.calcPadding(mainInputView.getWidth());
         symbolKeyboardType = liquidKeyboard.select(tabIndex);
