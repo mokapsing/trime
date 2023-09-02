@@ -454,8 +454,8 @@ public class Trime extends LifecycleInputMethodService {
   public void selectLiquidKeyboard(final int tabIndex) {
     final LinearLayout symbolInputView =
         inputRootBinding != null ? inputRootBinding.symbol.symbolInput : null;
-    final LinearLayout mainInputView =
-        inputRootBinding != null ? inputRootBinding.main.mainInput : null;
+    final LinearLayout mainInputView = null;
+    //    inputRootBinding != null ? inputRootBinding.main.mainInput : null;
     if (symbolInputView != null) {
       if (tabIndex >= 0) {
         final LinearLayout.LayoutParams param =
