@@ -486,7 +486,8 @@ public class Trime extends LifecycleInputMethodService {
         Timber.d("@@@maojiasheng debug 111 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
         int LiquidKeyboardHeightPx = SizeUtils.dp2px(LiquidKeyboardHeight);
         Timber.i("@@@maojiasheng info 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        Timber.d("@@@maojiasheng debug 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        Timber.d(
+            "@@@maojiasheng debug 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
         if (mainInputView.getHeight() > LiquidKeyboardHeightPx) {
           LiquidKeyboardHeightPx = mainInputView.getHeight();
           LiquidKeyboardHeight = SizeUtils.px2dp(LiquidKeyboardHeightPx);
@@ -494,7 +495,8 @@ public class Trime extends LifecycleInputMethodService {
         Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
         Timber.d("@@@maojiasheng debug 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
         Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        Timber.d("@@@maojiasheng debug 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        Timber.d(
+            "@@@maojiasheng debug 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
         param.height = LiquidKeyboardHeightPx;
         symbolInputView.setVisibility(View.VISIBLE);
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
