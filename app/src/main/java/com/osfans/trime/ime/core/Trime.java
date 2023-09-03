@@ -160,7 +160,7 @@ public class Trime extends LifecycleInputMethodService {
   private PositionType popupWindowPos; // 悬浮窗口彈出位置
   private PopupWindow mPopupWindow;
   private RectF mPopupRectF = new RectF();
-  private boolean isConfigLoaded = false;
+  private boolean isLiquidkeyboardHeightLoaded = false; // 避免重复读取液体键盘高度，读取过之后不再读取
   private final Handler mPopupHandler = new Handler(Looper.getMainLooper());
   private final Runnable mPopupTimer =
       new Runnable() {
@@ -347,6 +347,13 @@ public class Trime extends LifecycleInputMethodService {
     mPopupWindow.update(popupWindowX, popupWindowY, -1, -1, true);
   }
 
+  public void loadLiquidKeyboardHeight() {
+    final Config imeConfig = getImeConfig();
+    liquid_keyboard_height = imeConfig.getInt("liquid_keyboard_height");
+    liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
+    isLiquidkeyboardHeightLoaded = true;
+  }
+
   public void loadConfig() {
     final Config imeConfig = getImeConfig();
     popupWindowPos = imeConfig.getWinPos();
@@ -357,12 +364,12 @@ public class Trime extends LifecycleInputMethodService {
     popupMarginH = imeConfig.getPixel("layout/real_margin");
     textInputManager.setShouldResetAsciiMode(imeConfig.getBoolean("reset_ascii_mode"));
     isAutoCaps = imeConfig.getBoolean("auto_caps");
-    liquid_keyboard_height = imeConfig.getInt("liquid_keyboard_height");
-    liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
     isPopupWindowEnabled =
         getPrefs().getKeyboard().getPopupWindowEnabled() && imeConfig.hasKey("window");
     textInputManager.setShouldUpdateRimeOption(true);
-    isConfigLoaded = true;
+    if (!isLiquidkeyboardHeightLoaded) {
+      loadLiquidKeyboardHeight();
+    }
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -465,26 +472,33 @@ public class Trime extends LifecycleInputMethodService {
         inputRootBinding != null ? inputRootBinding.main.mainInput : null;
     if (symbolInputView != null) {
       if (tabIndex >= 0) {
-        final int orientation = getResources().getConfiguration().orientation;
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
-        if (!isConfigLoaded) {
-          loadConfig();
+        final int orientation = getResources().getConfiguration().orientation;
+        if (!isLiquidkeyboardHeightLoaded) {
+          loadLiquidKeyboardHeight();
         }
-        int lq_height =
-            SizeUtils.dp2px(
-                ((orientation == Configuration.ORIENTATION_LANDSCAPE)
-                    ? liquid_keyboard_height_land
-                    : liquid_keyboard_height));
-        if (lq_height <= 0) {
-          lq_height = mainInputView.getHeight();
+        int LiquidKeyboardHeight =
+            ((orientation == Configuration.ORIENTATION_LANDSCAPE)
+                ? liquid_keyboard_height_land
+                : liquid_keyboard_height);
+        Timber.i("@@@maojiasheng info 111 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
+        Timber.d("@@@maojiasheng debug 111 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
+        int LiquidKeyboardHeightPx = SizeUtils.dp2px(LiquidKeyboardHeight);
+        Timber.i("@@@maojiasheng info 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        Timber.d("@@@maojiasheng debug 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        if (mainInputView.getHeight() > LiquidKeyboardHeightPx) {
+          LiquidKeyboardHeightPx = mainInputView.getHeight();
+          LiquidKeyboardHeight = SizeUtils.px2dp(LiquidKeyboardHeightPx);
         }
-
-        param.height = lq_height;
+        Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
+        Timber.d("@@@maojiasheng debug 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
+        Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        Timber.d("@@@maojiasheng debug 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
+        param.height = LiquidKeyboardHeightPx;
         symbolInputView.setVisibility(View.VISIBLE);
-
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
-        liquidKeyboard.calcPadding(mainInputView.getWidth());
+        liquidKeyboard.calcPadding(LiquidKeyboardHeight, mainInputView.getWidth());
         symbolKeyboardType = liquidKeyboard.select(tabIndex);
         tabView.updateTabWidth();
         if (inputRootBinding != null) {
@@ -630,6 +644,7 @@ public class Trime extends LifecycleInputMethodService {
     if (symbolInputView != null) symbolInputView.setVisibility(View.GONE);
     if (mainInputView != null) mainInputView.setVisibility(View.VISIBLE);
     getImeConfig().reset();
+    isLiquidkeyboardHeightLoaded = false;
     loadConfig();
     getImeConfig().initCurrentColors();
     getImeConfig().setSoundFromColor();
@@ -652,6 +667,7 @@ public class Trime extends LifecycleInputMethodService {
   public void initKeyboardDarkMode(boolean darkMode) {
     if (getImeConfig().hasDarkLight()) {
       getImeConfig().reset();
+      isLiquidkeyboardHeightLoaded = false;
       loadConfig();
       getImeConfig().initCurrentColors(darkMode);
       getImeConfig().setSoundFromColor();
