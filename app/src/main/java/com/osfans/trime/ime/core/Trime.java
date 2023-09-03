@@ -477,7 +477,7 @@ public class Trime extends LifecycleInputMethodService {
         if (!isLiquidkeyboardHeightLoaded) {
           loadLiquidKeyboardHeight();
         }
-        final int LiquidKeyboardHeight =
+        int LiquidKeyboardHeight =
             ((orientation == Configuration.ORIENTATION_LANDSCAPE)
                 ? liquid_keyboard_height_land
                 : liquid_keyboard_height);
