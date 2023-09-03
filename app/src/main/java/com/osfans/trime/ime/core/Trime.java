@@ -58,7 +58,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import com.blankj.utilcode.util.BarUtils;
-import com.blankj.utilcode.util.SizeUtils;
 import com.osfans.trime.BuildConfig;
 import com.osfans.trime.R;
 import com.osfans.trime.core.Rime;
@@ -349,8 +348,8 @@ public class Trime extends LifecycleInputMethodService {
 
   public void loadLiquidKeyboardHeight() {
     final Config imeConfig = getImeConfig();
-    liquid_keyboard_height = imeConfig.getInt("liquid_keyboard_height");
-    liquid_keyboard_height_land = imeConfig.getInt("liquid_keyboard_height_land");
+    liquid_keyboard_height = imeConfig.getPixel("liquid_keyboard_height");
+    liquid_keyboard_height_land = imeConfig.getPixel("liquid_keyboard_height_land");
     isLiquidkeyboardHeightLoaded = true;
   }
 
@@ -478,26 +477,15 @@ public class Trime extends LifecycleInputMethodService {
         if (!isLiquidkeyboardHeightLoaded) {
           loadLiquidKeyboardHeight();
         }
-        int LiquidKeyboardHeight =
+        final int LiquidKeyboardHeight =
             ((orientation == Configuration.ORIENTATION_LANDSCAPE)
                 ? liquid_keyboard_height_land
                 : liquid_keyboard_height);
-        Timber.i("@@@maojiasheng info 111 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
-        Timber.d("@@@maojiasheng debug 111 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
-        int LiquidKeyboardHeightPx = SizeUtils.dp2px(LiquidKeyboardHeight);
-        Timber.i("@@@maojiasheng info 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        Timber.d(
-            "@@@maojiasheng debug 111 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        if (mainInputView.getHeight() > LiquidKeyboardHeightPx) {
-          LiquidKeyboardHeightPx = mainInputView.getHeight();
-          LiquidKeyboardHeight = SizeUtils.px2dp(LiquidKeyboardHeightPx);
+
+        if (mainInputView.getHeight() > LiquidKeyboardHeight) {
+          LiquidKeyboardHeight = mainInputView.getHeight();
         }
-        Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
-        Timber.d("@@@maojiasheng debug 222 print LiquidKeyboardHeight=%d", LiquidKeyboardHeight);
-        Timber.i("@@@maojiasheng info 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        Timber.d(
-            "@@@maojiasheng debug 222 print LiquidKeyboardHeightPx=%d", LiquidKeyboardHeightPx);
-        param.height = LiquidKeyboardHeightPx;
+        param.height = LiquidKeyboardHeight;
         symbolInputView.setVisibility(View.VISIBLE);
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
         liquidKeyboard.calcPadding(LiquidKeyboardHeight, mainInputView.getWidth());

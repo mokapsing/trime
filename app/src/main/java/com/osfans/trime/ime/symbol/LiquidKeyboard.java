@@ -165,13 +165,7 @@ public class LiquidKeyboard {
       int keyBoardHeightLand = config.getPixel("keyboard_height_land");
       if (keyBoardHeightLand > 0) keyboardHeight = keyBoardHeightLand;
     }
-    Timber.i("@@@maojiasheng info 333 print parentHeight=%d", parentHeight);
-    Timber.d("@@@maojiasheng debug 333 print parentHeight=%d", parentHeight);
-    Timber.i("@@@maojiasheng info 444 print keyboardHeight=%d", keyboardHeight);
-    Timber.d("@@@maojiasheng debug 444 print keyboardHeight=%d", keyboardHeight);
     if (keyboardHeight <= 0) keyboardHeight = parentHeight;
-    Timber.i("@@@maojiasheng info 555 print keyboardHeight=%d", keyboardHeight);
-    Timber.d("@@@maojiasheng debug 555 print keyboardHeight=%d", keyboardHeight);
     int row = (int) config.getLiquidFloat("row");
     if (row > 0) {
       if (isLand) {
