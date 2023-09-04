@@ -318,10 +318,6 @@ public class Trime extends LifecycleInputMethodService {
       final Message msg = new Message();
       msg.obj = this;
       syncBackgroundHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
-    } else {
-      final Message msg = new Message();
-      msg.obj = this;
-      writeUserDataHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
     }
 
     Timber.d(methodName + "eventListeners");
