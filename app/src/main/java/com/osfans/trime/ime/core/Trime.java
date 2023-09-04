@@ -266,8 +266,9 @@ public class Trime extends LifecycleInputMethodService {
       new Handler(
           msg -> {
             if (!((Trime) msg.obj).isShowInputRequested()) { // 若当前没有输入面板，则后台同步。防止面板关闭后5秒内再次打开
-              ShortcutUtils.INSTANCE.writeUserData((Trime) msg.obj);
-              ((Trime) msg.obj).loadConfig();
+              Rime.destroy();
+              getImeConfig().destroy();
+              System.exit(0); // 清理內存
             }
             return false;
           });
@@ -320,7 +321,6 @@ public class Trime extends LifecycleInputMethodService {
       syncBackgroundHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
     } else {
       final Message msg = new Message();
-      msg.obj = this;
       writeUserDataHandler.sendMessageDelayed(msg, 5000); // 输入面板隐藏5秒后，开始后台同步
     }
 
