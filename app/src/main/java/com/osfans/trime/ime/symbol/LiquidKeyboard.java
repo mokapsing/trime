@@ -132,10 +132,11 @@ public class LiquidKeyboard {
   }
 
   // 设置liquidKeyboard共用的布局参数
-  public void calcPadding(int parentHeight, int width) {
+  public void calcPadding(int height, int width) {
 
     Config config = Config.get(context);
     parent_width = width;
+    keyboardHeight = height;
     final Map<String, ?> liquid_config = config.getLiquidKeyboard();
 
     // liquid_keyboard/margin_x定义了每个键左右两边的间隙，也就是说相邻两个键间隙是x2，而horizontal_gap定义的是spacer，使用时需要/2
@@ -159,13 +160,6 @@ public class LiquidKeyboard {
     Drawable keyboardBackground =
         config.getDrawable("liquid_keyboard_background", null, null, null, null);
     if (keyboardBackground != null) parentView.setBackground(keyboardBackground);
-
-    int keyboardHeight = config.getPixel("keyboard_height");
-    if (isLand) {
-      int keyBoardHeightLand = config.getPixel("keyboard_height_land");
-      if (keyBoardHeightLand > 0) keyboardHeight = keyBoardHeightLand;
-    }
-    if (keyboardHeight <= 0) keyboardHeight = parentHeight;
 
     int row = (int) config.getLiquidFloat("row");
     if (row > 0) {
