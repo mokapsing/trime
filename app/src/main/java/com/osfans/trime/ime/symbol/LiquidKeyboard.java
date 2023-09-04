@@ -132,7 +132,7 @@ public class LiquidKeyboard {
   }
 
   // 设置liquidKeyboard共用的布局参数
-  public void calcPadding(int keyboardHeight, int width) {
+  public void calcPadding(int width) {
 
     Config config = Config.get(context);
     parent_width = width;
@@ -156,10 +156,17 @@ public class LiquidKeyboard {
 
     // 初次显示布局，需要刷新背景
     parentView = (LinearLayout) keyboardView.getParent();
+    int keyboardHeight = config.getPixel("liquid_keyboard_height");
+    if (isLand) {
+      int keyBoardHeightLand = config.getPixel("liquid_keyboard_height_land");
+      if (keyBoardHeightLand > 0) keyboardHeight = keyBoardHeightLand;
+    }
+    if (parentView.getHeight() > keyboardHeight) {
+      keyboardHeight = parentView.getHeight();
+    }
     Drawable keyboardBackground =
         config.getDrawable("liquid_keyboard_background", null, null, null, null);
-    if (keyboardBackground != null) parentView.setBackground(keyboardBackground);
-
+    if (keyboardBackground != null) parentView.setBackground(keyboardBackground); 
     int row = (int) config.getLiquidFloat("row");
     if (row > 0) {
       if (isLand) {
