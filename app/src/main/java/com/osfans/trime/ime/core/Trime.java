@@ -457,7 +457,7 @@ public class Trime extends LifecycleInputMethodService {
         final LinearLayout.LayoutParams param =
             (LinearLayout.LayoutParams) symbolInputView.getLayoutParams();
         final int orientation = getResources().getConfiguration().orientation;
-        param.height = LiquidKeyboardHeight;
+        param.height = mainInputView.getHeight();
         symbolInputView.setVisibility(View.VISIBLE);
         liquidKeyboard.setLand(orientation == Configuration.ORIENTATION_LANDSCAPE);
         liquidKeyboard.calcPadding(mainInputView.getWidth());
