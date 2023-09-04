@@ -166,7 +166,7 @@ public class LiquidKeyboard {
     }
     Drawable keyboardBackground =
         config.getDrawable("liquid_keyboard_background", null, null, null, null);
-    if (keyboardBackground != null) parentView.setBackground(keyboardBackground); 
+    if (keyboardBackground != null) parentView.setBackground(keyboardBackground);
     int row = (int) config.getLiquidFloat("row");
     if (row > 0) {
       if (isLand) {
