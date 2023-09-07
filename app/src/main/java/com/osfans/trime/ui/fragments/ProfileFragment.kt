@@ -110,15 +110,12 @@ class ProfileFragment :
             get<SwitchPreferenceCompat>("profile_timing_sync")?.setOnPreferenceClickListener { // 监听定时同步偏好设置
                 val alarmManager =
                     context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val pendingIntentFlag = PendingIntent.FLAG_UPDATE_CURRENT
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                    pendingIntentFlag = PendingIntent.FLAG_IMMUTABLE
-                }
                 val pendingIntent = PendingIntent.getBroadcast( // 设置待发送的同步事件
                     context,
                     0,
                     Intent("com.osfans.trime.timing.sync"),
-                    pendingIntentFlag,
+                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) 
+                        PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT,
                 )
                 val cal = Calendar.getInstance()
                 if (get<SwitchPreferenceCompat>("profile_timing_sync")?.isChecked == true) { // 当定时同步偏好打开时
