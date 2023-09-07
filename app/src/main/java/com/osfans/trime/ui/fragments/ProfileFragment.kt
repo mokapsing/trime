@@ -115,7 +115,7 @@ class ProfileFragment :
                     0,
                     Intent("com.osfans.trime.timing.sync"),
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     } else {
                         PendingIntent.FLAG_UPDATE_CURRENT
                     },
