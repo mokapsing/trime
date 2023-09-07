@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # general options
-option(BUILD_SHARED_LIBS "" OFF)
-option(BUILD_TESTING "" OFF)
+# option(BUILD_SHARED_LIBS "" OFF)
+# option(BUILD_TESTING "" OFF)
 
 # iconv for Boost::locale
 include(Iconv)
@@ -20,6 +20,7 @@ install(TARGETS iconv EXPORT boost_locale-targets
 
 option(BOOST_FILESYSTEM_DISABLE_STATX "" ON) # remove this option after targetSdkVersion >= 30
 add_subdirectory(boost)
+option(BUILD_TESTING "" OFF)
 
 option(EXTERNAL_CAPNP "" ON)
 option(CAPNP_LITE "" ON) # librime only needs CapnProto::capnp
