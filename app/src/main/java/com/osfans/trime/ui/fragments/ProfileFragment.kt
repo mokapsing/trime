@@ -114,7 +114,7 @@ class ProfileFragment :
                     context,
                     0,
                     Intent("com.osfans.trime.timing.sync"),
-                    (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S 
+                    ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S)
                         ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT),
                 )
                 val cal = Calendar.getInstance()
