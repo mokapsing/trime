@@ -305,8 +305,10 @@ public class Trime extends LifecycleInputMethodService {
 
   public void loadLiquidKeyboardHeight() {
     final Theme theme = Theme.get();
-    liquid_keyboard_height = (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height"));
-    liquid_keyboard_height_land = (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height_land"));
+    liquid_keyboard_height =
+        (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height"));
+    liquid_keyboard_height_land =
+        (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height_land"));
     isLiquidkeyboardHeightLoaded = true;
   }
 
