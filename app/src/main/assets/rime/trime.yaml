@@ -53,6 +53,7 @@ style:
     alpha: 0xdd #透明度(0-255)
     elevation: 5 #陰影(>=Android5.0)
     movable: once #是否可移動窗口，或僅移動一次 true|false|once
+    touchable: true #是否支持触摸移动光标
   window: #懸浮窗口組件
     - {start: "", move: 'ㄓ ', end: ""}
     - {start: "", composition: "%s", end: "", letter_spacing: 0} #letter_spacing需要>=Android5.0。TODO: 不爲0時，會導致不換行的問題

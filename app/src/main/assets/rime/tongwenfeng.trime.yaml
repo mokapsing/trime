@@ -63,6 +63,7 @@ style:
     elevation: 0 #阴影(>=Android5.0)
     background: background.png #颜色或者backgrounds目录下的图片文档名
     movable: false #是否可移动窗口，或仅移动一次 true|false|once
+    touchable: true #是否支持触摸移动光标
     all_phrases: false #显示所有长词
   window: #悬浮窗口组件
 #    - {start: "", move: 'ㄓ ', end: ""}
@@ -81,6 +82,8 @@ style:
   locale: zh_CN #缺省语言 zh_TW,zh_CN,zh_HK,""
   keyboard_height: 250 #锁定键盘高度，避免切换时键盘高度变化而造成闪烁
   keyboard_height_land: 200 #锁定横屏下键盘高度，避免切换时键盘高度变化而造成闪烁
+  liquid_keyboard_height: 250 #锁定液体键盘高度，优先生效，未设置时回落到keyboard_height
+  liquid_keyboard_height_land: 200 #锁定液体横屏下键盘高度，优先生效，未设置时回落到keyboard_height_land
   preview_font: latin.ttf #按键提示字体
   preview_height: 56 #按键提示高度
   preview_offset: -32 #按键提示纵向偏移
