@@ -430,7 +430,7 @@ public class Trime extends LifecycleInputMethodService {
           ((orientation == Configuration.ORIENTATION_LANDSCAPE)
               ? liquid_keyboard_height_land
               : liquid_keyboard_height);
-      if (mainInputView.getHeight() > LiquidKeyboardHeight) {
+      if (mainInput.getHeight() > LiquidKeyboardHeight) {
         LiquidKeyboardHeight = mainInput.getHeight();
       }
       symbolInput.getLayoutParams().height = LiquidKeyboardHeight;
