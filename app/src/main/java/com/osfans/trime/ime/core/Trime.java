@@ -133,6 +133,9 @@ public class Trime extends LifecycleInputMethodService {
   private int minPopupCheckSize; // 第一屏候选词数量少于设定值，则候选词上悬浮窗。（也就是说，第一屏存在长词）此选项大于1时，min_length等参数失效
   private PopupPosition popupWindowPos; // 悬浮窗口彈出位置
   private PopupWindow mPopupWindow;
+  private int liquid_keyboard_height; // 液体键盘固定高度
+  private int liquid_keyboard_height_land; // 液体键盘竖屏固定高度
+  private boolean isLiquidkeyboardHeightLoaded = false; // 避免重复读取液体键盘高度，读取过之后不再读取
   private final RectF mPopupRectF = new RectF();
   private final Handler mPopupHandler = new Handler(Looper.getMainLooper());
   private final Runnable mPopupTimer =
@@ -300,6 +303,13 @@ public class Trime extends LifecycleInputMethodService {
     mPopupWindow.update(popupWindowX, popupWindowY, -1, -1, true);
   }
 
+  public void loadLiquidKeyboardHeight() {
+    final Theme theme = Theme.get();
+    liquid_keyboard_height = (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height"));
+    liquid_keyboard_height_land = (int) DimensionsKt.dp2px(theme.style.getFloat("liquid_keyboard_height_land"));
+    isLiquidkeyboardHeightLoaded = true;
+  }
+
   public void loadConfig() {
     final Theme theme = Theme.get();
     popupWindowPos = PopupPosition.fromString(theme.style.getString("layout/position"));
@@ -313,6 +323,9 @@ public class Trime extends LifecycleInputMethodService {
     isPopupWindowEnabled =
         getPrefs().getKeyboard().getPopupWindowEnabled() && theme.style.getObject("window") != null;
     textInputManager.setShouldUpdateRimeOption(true);
+    if (!isLiquidkeyboardHeightLoaded) {
+      loadLiquidKeyboardHeight();
+    }
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -407,7 +420,18 @@ public class Trime extends LifecycleInputMethodService {
     final View symbolInput = inputRootBinding.symbol.symbolInput;
     final View mainInput = inputRootBinding.main.mainInput;
     if (tabIndex >= 0) {
-      symbolInput.getLayoutParams().height = mainInput.getHeight();
+      final int orientation = getResources().getConfiguration().orientation;
+      if (!isLiquidkeyboardHeightLoaded) {
+        loadLiquidKeyboardHeight();
+      }
+      int LiquidKeyboardHeight =
+          ((orientation == Configuration.ORIENTATION_LANDSCAPE)
+              ? liquid_keyboard_height_land
+              : liquid_keyboard_height);
+      if (mainInputView.getHeight() > LiquidKeyboardHeight) {
+        LiquidKeyboardHeight = mainInput.getHeight();
+      }
+      symbolInput.getLayoutParams().height = LiquidKeyboardHeight;
       symbolInput.setVisibility(View.VISIBLE);
 
       symbolKeyboardType = liquidKeyboard.select(tabIndex);

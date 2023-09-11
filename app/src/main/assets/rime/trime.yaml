@@ -75,6 +75,8 @@ style:
   locale: zh_TW #預設語言 zh_TW,zh_CN,zh_HK,""
   keyboard_height: 250 #锁定键盘高度，避免切换时键盘高度变化而造成闪烁
   keyboard_height_land: 200 #锁定横屏下键盘高度，避免切换时键盘高度变化而造成闪烁
+  liquid_keyboard_height: 250 #锁定液体键盘高度，优先生效，未设置时回落到keyboard_height
+  liquid_keyboard_height_land: 200 #锁定液体横屏下键盘高度，优先生效，未设置时回落到keyboard_height_land
   preview_font: latin.ttf #按鍵提示字型
   preview_height: 60 #按鍵提示高度
   preview_offset: -12 #按鍵提示縱向偏移
