@@ -128,7 +128,7 @@ object ShortcutUtils {
     }
 
     fun writeUserData() {
-        Rime.exitRime();
+        Rime.exitRime()
     }
 
     fun openCategory(keyCode: Int): Boolean {
