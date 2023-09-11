@@ -127,6 +127,10 @@ object ShortcutUtils {
         prefs.profile.lastSyncStatus = Rime.syncRimeUserData().also { Rime.deploy() }
     }
 
+    fun writeUserData() {
+        Rime.exitRime();
+    }
+
     fun openCategory(keyCode: Int): Boolean {
         val category = applicationLaunchKeyCategories[keyCode]
         return if (category != null) {
