@@ -87,6 +87,11 @@ class Rime(fullCheck: Boolean) {
             OpenCCDictManager.buildOpenCCDict()
         }
 
+        fun saveUserData() {
+            destroy()
+            getInstance(true)
+        }
+
         fun updateStatus() {
             SchemaManager.updateSwitchOptions()
             measureTimeMillis {
