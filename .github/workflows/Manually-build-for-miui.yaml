@@ -2,7 +2,7 @@ name: Manually-build-for-miui
 'on': workflow_dispatch
 env:
   CI_NAME: Commit CI
-  PACKAGE_NAME: com.osfan.trime
+  PACKAGE_NAME: com.osfans.trime
   PACKAGE_NAME_NEW: com.baidu.input_mi
   APP_NAME: Trime
   APP_NAME_CN: 同文输入法
