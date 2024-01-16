@@ -1,7 +1,15 @@
-name: Manually-no-prebuild
+name: Manually-build-for-miui
 on: workflow_dispatch
 env:
   CI_NAME: Commit CI
+  PACKAGE_NAME: com.osfan.trime
+  PACKAGE_NAME_NEW: com.baidu.input_mi
+  APP_NAME: Trime
+  APP_NAME_CN: 同文输入法
+  APP_NAME_TW: 同文輸入法
+  APP_NAME_NEW: Trime@Baidu
+  APP_NAME_NEW_CN: 同文百度
+  APP_NAME_NEW_TW: 同文百度
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,7 +28,13 @@ jobs:
       - name: Fetch submodules
         run: |
           git submodule update --init --recursive
-          
+
+      - name: Apply Custom Define
+      run: |
+        sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle
+        sed -i s/$APP_NAME/$APP_NAME_NEW/g app/src/main/res/values/strings.xml
+        sed -i s/$APP_NAME_CN/$APP_NAME_NEW_CN/g app/src/main/res/values-zh-rCN/strings.xml
+        sed -i s/$APP_NAME_TW/$APP_NAME_NEW_TW/g app/src/main/res/values-zh-rTW/strings.xml  
           
       - name: Decode keystore 
         uses: timheuer/base64-to-file@v1.2
@@ -64,10 +78,26 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
+      - name: Upload Trime artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trime
+          path: app/build/outputs/apk/**/*.apk
+          # keep 90 days
+          retention-days: 90
+
       - name: Upload Trime artifact (ARM64_V8A only)
         uses: actions/upload-artifact@v3
         with:
           name: trime_arm64_v8a
           path: app/build/outputs/apk/**/*arm64-v8a-*.apk
+          # keep 90 days
+          retention-days: 90
+
+      - name: Upload jni artifact (librime_jni.so)
+        uses: actions/upload-artifact@v3
+        with:
+          name: librime_jni
+          path: app/build/intermediates/stripped_native_libs/*/out/lib/*
           # keep 90 days
           retention-days: 90
