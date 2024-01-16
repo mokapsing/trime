@@ -1,5 +1,5 @@
 name: Manually-build-for-miui
-on: workflow_dispatch
+'on': workflow_dispatch
 env:
   CI_NAME: Commit CI
   PACKAGE_NAME: com.osfan.trime
@@ -18,86 +18,83 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: Get branch name
         id: vars
         run: |
           echo ${GITHUB_REF#refs/*/}
           echo CI_BRANCH=${GITHUB_REF#refs/*/} >> $GITHUB_ENV
-
       - name: Fetch submodules
         run: |
           git submodule update --init --recursive
-
       - name: Apply Custom Define
-        run: |
+        run: >
           sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle
+
           sed -i s/$APP_NAME/$APP_NAME_NEW/g app/src/main/res/values/strings.xml
-          sed -i s/$APP_NAME_CN/$APP_NAME_NEW_CN/g app/src/main/res/values-zh-rCN/strings.xml
-          sed -i s/$APP_NAME_TW/$APP_NAME_NEW_TW/g app/src/main/res/values-zh-rTW/strings.xml  
-          
-      - name: Decode keystore 
+
+          sed -i s/$APP_NAME_CN/$APP_NAME_NEW_CN/g
+          app/src/main/res/values-zh-rCN/strings.xml
+
+          sed -i s/$APP_NAME_TW/$APP_NAME_NEW_TW/g
+          app/src/main/res/values-zh-rTW/strings.xml 
+      - name: Decode keystore
         uses: timheuer/base64-to-file@v1.2
         with:
-          fileName: 'keystore/test.jks'
-          fileDir: '/home/runner/work/_temp/'
-          encodedString: ${{ secrets.KEYSTORE }}
-          
-      - name: create keystore and properties file for signing the app   
-        run: |
-          echo "storeFile=/home/runner/work/_temp/keystore/test.jks" >> /home/runner/work/trime/trime/keystore.properties
-          echo "keyAlias=$SIGNING_KEY_ALIAS" >> /home/runner/work/trime/trime/keystore.properties
-          echo "storePassword=$SIGNING_STORE_PASSWORD" >> /home/runner/work/trime/trime/keystore.properties
-          echo "keyPassword=$SIGNING_KEY_PASSWORD" >> /home/runner/work/trime/trime/keystore.properties
+          fileName: keystore/test.jks
+          fileDir: /home/runner/work/_temp/
+          encodedString: '${{ secrets.KEYSTORE }}'
+      - name: create keystore and properties file for signing the app
+        run: >
+          echo "storeFile=/home/runner/work/_temp/keystore/test.jks" >>
+          /home/runner/work/trime/trime/keystore.properties
+
+          echo "keyAlias=$SIGNING_KEY_ALIAS" >>
+          /home/runner/work/trime/trime/keystore.properties
+
+          echo "storePassword=$SIGNING_STORE_PASSWORD" >>
+          /home/runner/work/trime/trime/keystore.properties
+
+          echo "keyPassword=$SIGNING_KEY_PASSWORD" >>
+          /home/runner/work/trime/trime/keystore.properties
+
           #ls /home/runner/work/trime/trime/app
+
           #cat /home/runner/work/trime/trime/app/keystore.properties
-          
-        env: 
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      
+        env:
+          SIGNING_KEY_ALIAS: '${{ secrets.SIGNING_KEY_ALIAS }}'
+          SIGNING_KEY_PASSWORD: '${{ secrets.SIGNING_KEY_PASSWORD }}'
+          SIGNING_STORE_PASSWORD: '${{ secrets.SIGNING_STORE_PASSWORD }}'
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
+          distribution: temurin
           java-version: 17
-          # will restore cache of dependencies and wrappers
-          cache: 'gradle'
-
+          cache: gradle
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-
       - name: Install dependency
         run: ./script/dependency.sh
-
       - name: Build Trime
         run: make release
         env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-
+          SIGNING_KEY_ALIAS: '${{ secrets.SIGNING_KEY_ALIAS }}'
+          SIGNING_KEY_PASSWORD: '${{ secrets.SIGNING_KEY_PASSWORD }}'
+          SIGNING_STORE_PASSWORD: '${{ secrets.SIGNING_STORE_PASSWORD }}'
       - name: Upload Trime artifact
         uses: actions/upload-artifact@v3
         with:
           name: trime
           path: app/build/outputs/apk/**/*.apk
-          # keep 90 days
           retention-days: 90
-
       - name: Upload Trime artifact (ARM64_V8A only)
         uses: actions/upload-artifact@v3
         with:
           name: trime_arm64_v8a
           path: app/build/outputs/apk/**/*arm64-v8a-*.apk
-          # keep 90 days
           retention-days: 90
-
       - name: Upload jni artifact (librime_jni.so)
         uses: actions/upload-artifact@v3
         with:
           name: librime_jni
           path: app/build/intermediates/stripped_native_libs/*/out/lib/*
-          # keep 90 days
           retention-days: 90
