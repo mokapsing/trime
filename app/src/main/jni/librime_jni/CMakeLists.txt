@@ -14,12 +14,7 @@ target_include_directories(rime_jni PRIVATE
 )
 
 string(TIMESTAMP TODAY "%Y%m%d")
-execute_process(
-  COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/../../../../.git describe --tags
-  OUTPUT_VARIABLE TRIME_VERSION
-)
-string(STRIP ${TRIME_VERSION} TRIME_VERSION)
-set(TRIME_VERSION "${TRIME_VERSION}-${TODAY}")
+set(TRIME_VERSION "3.2.17-${TODAY}")
 
 execute_process(
   COMMAND git --git-dir ${CMAKE_SOURCE_DIR}/OpenCC/.git describe --tags
