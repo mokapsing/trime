@@ -1,7 +1,16 @@
-name: Manually-no-prebuild
+name: Manually-build-for-miui
 on: workflow_dispatch
 env:
   CI_NAME: Commit CI
+  PACKAGE_NAME: com.osfan.trime
+  PACKAGE_NAME_NEW: com.baidu.input_mi
+  APP_NAME: Trime
+  APP_NAME_CN: 同文输入法
+  APP_NAME_TW: 同文輸入法
+  APP_NAME_NEW: Trime@Baidu
+  APP_NAME_NEW_CN: 同文百度
+  APP_NAME_NEW_TW: 同文百度
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,7 +29,13 @@ jobs:
       - name: Fetch submodules
         run: |
           git submodule update --init --recursive
-          
+
+      - name: Apply Custom Define
+      run: |
+        sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle
+        sed -i s/$APP_NAME/$APP_NAME_NEW/g app/src/main/res/values/strings.xml
+        sed -i s/$APP_NAME_CN/$APP_NAME_NEW_CN/g app/src/main/res/values-zh-rCN/strings.xml
+        sed -i s/$APP_NAME_TW/$APP_NAME_NEW_TW/g app/src/main/res/values-zh-rTW/strings.xml  
           
       - name: Decode keystore 
         uses: timheuer/base64-to-file@v1.2
