@@ -29,6 +29,7 @@ jobs:
       - name: Apply Custom Define
         run: >
           sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle.kts
+
           sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g buildSrc/build.gradle.kts
 
           sed -i s/$APP_NAME/$APP_NAME_NEW/g app/src/main/res/values/strings.xml
