@@ -2,7 +2,7 @@ name: Manually-build-for-miui
 'on': workflow_dispatch
 env:
   CI_NAME: Commit CI
-  PACKAGE_NAME: com.osfan.trime
+  PACKAGE_NAME: com.osfans.trime
   PACKAGE_NAME_NEW: com.baidu.input_mi
   APP_NAME: Trime
   APP_NAME_CN: 同文输入法
@@ -28,7 +28,9 @@ jobs:
           git submodule update --init --recursive
       - name: Apply Custom Define
         run: >
-          sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle
+          sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g app/build.gradle.kts
+
+          sed -i s/$PACKAGE_NAME/$PACKAGE_NAME_NEW/g buildSrc/build.gradle.kts
 
           sed -i s/$APP_NAME/$APP_NAME_NEW/g app/src/main/res/values/strings.xml
 
