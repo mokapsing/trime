@@ -10,6 +10,7 @@ env:
   APP_NAME_NEW: Trime@Baidu
   APP_NAME_NEW_CN: 同文百度
   APP_NAME_NEW_TW: 同文百度
+
 jobs:
   build:
     runs-on: ubuntu-latest
