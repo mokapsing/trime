@@ -76,6 +76,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             setPadding(space)
         }
         theme = Theme.get(UiUtil.isDarkMode(context))
+        adapterType = AdapterType.INIT
     }
 
 // 及时更新layoutManager, 以防在旋转屏幕后打开液体键盘crash
@@ -143,7 +144,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
                     if (tabTag.type === SymbolKeyboardType.SYMBOL) {
                         service.inputSymbol(bean.text)
                         return@setListener
-                    } else if (tabTag.type !== SymbolKeyboardType.TABS) {
+                    } else {
                         service.commitText(bean.text)
                         if (tabTag.type !== SymbolKeyboardType.HISTORY) {
                             symbolHistory.insert(bean.text)
@@ -152,31 +153,10 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
                         return@setListener
                     }
                 }
-
-                val tag = TabManager.get().getTabSwitchTabTag(position)
-                val truePosition = TabManager.get().getTabSwitchPosition(position)
-                if (tag != null) {
-                    Timber.v(
-                        "TABS click: " +
-                            "position = $position, truePosition = $truePosition, tag.text = ${tag.text}",
-                    )
-                    if (tag.type === SymbolKeyboardType.NO_KEY) {
-                        when (tag.command) {
-                            KeyCommandType.EXIT -> service.selectLiquidKeyboard(-1)
-                            KeyCommandType.DEL_LEFT, KeyCommandType.DEL_RIGHT, KeyCommandType.REDO, KeyCommandType.UNDO -> {}
-                            else -> {}
-                        }
-                    } else if (TabManager.get().isAfterTabSwitch(truePosition)) {
-                        // tab的位置在“更多”的右侧，不滚动tab，焦点仍然在”更多“上
-                        select(truePosition)
-                    } else {
-                        service.selectLiquidKeyboard(truePosition)
-                    }
-                }
             }
         }
 
-        if (adapterType != AdapterType.SIMPLE) {
+        if (shouldChangeAdapter(AdapterType.SIMPLE)) {
             adapterType = AdapterType.SIMPLE
             keyboardView.apply {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -276,7 +256,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             )
         }
 
-        if (adapterType != AdapterType.DB) {
+        if (shouldChangeAdapter(AdapterType.DB)) {
             adapterType = AdapterType.DB
             keyboardView.apply {
                 layoutManager = getOneColumnStaggeredGrid()
@@ -310,7 +290,7 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
     }
 
     private fun initCandidates() {
-        if (adapterType != AdapterType.CANDIDATE) {
+        if (shouldChangeAdapter(AdapterType.CANDIDATE)) {
             adapterType = AdapterType.CANDIDATE
             // 设置布局管理器
             keyboardView.apply {
@@ -338,13 +318,34 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
                     if (tabTag.type === SymbolKeyboardType.SYMBOL) {
                         service.inputSymbol(bean.text)
                         return@setListener
+                    } else if (tabTag.type === SymbolKeyboardType.TABS) {
+                        val tag = TabManager.get().getTabSwitchTabTag(position)
+                        val truePosition = TabManager.get().getTabSwitchPosition(position)
+                        if (tag != null) {
+                            Timber.v(
+                                "TABS click: " + "position = $position, truePosition = $truePosition, tag.text = ${tag.text}",
+                            )
+                            if (tag.type === SymbolKeyboardType.NO_KEY) {
+                                when (tag.command) {
+                                    KeyCommandType.EXIT -> service.selectLiquidKeyboard(-1)
+                                    KeyCommandType.DEL_LEFT, KeyCommandType.DEL_RIGHT, KeyCommandType.REDO, KeyCommandType.UNDO -> {}
+                                    else -> {}
+                                }
+                            } else if (TabManager.get().isAfterTabSwitch(truePosition)) {
+                                // tab的位置在“更多”的右侧，不滚动tab，焦点仍然在”更多“上
+                                select(truePosition)
+                            } else {
+                                service.selectLiquidKeyboard(truePosition)
+                            }
+                        }
+                        return@setListener
                     }
                 }
                 service.currentInputConnection?.commitText(data[position].text, 1)
             }
         }
 
-        if (adapterType != AdapterType.VAR_LENGTH) {
+        if (shouldChangeAdapter(AdapterType.VAR_LENGTH)) {
             adapterType = AdapterType.VAR_LENGTH
             // 设置布局管理器
             keyboardView.apply {
@@ -399,6 +400,10 @@ class LiquidKeyboard(private val context: Context) : ClipboardHelper.OnClipboard
             },
         )
     }
+
+    private fun shouldChangeAdapter(type: AdapterType) =
+        adapterType != type ||
+            adapterType == AdapterType.INIT
 
     private enum class AdapterType {
         INIT,
