@@ -5,8 +5,8 @@ object CollectionUtils {
     fun <K, V> getOrDefault(
         map: Map<K, V>,
         key: K,
-        defaultValue: V,
-    ): V = map[key] ?: defaultValue
+        defValue: V,
+    ): V = map[key] ?: defValue
 
     @Suppress("UNCHECKED_CAST")
     @JvmStatic
@@ -14,7 +14,7 @@ object CollectionUtils {
         map: Map<String, Any?>?,
         vararg: String?,
     ): Any? {
-        if (map.isNullOrEmpty() || vararg == null) return null
+        if (map.isNullOrEmpty() || vararg.isNullOrEmpty()) return null
         val keys = vararg.split('/')
         var v: Any? = map
         for (key in keys) {
@@ -71,6 +71,8 @@ object CollectionUtils {
         key: String,
         defValue: Boolean = false,
     ): Boolean {
-        return if (map.isNullOrEmpty() || key.isEmpty()) defValue else obtainString(map, key).toBoolean()
+        if (map.isNullOrEmpty() || key.isEmpty()) return defValue
+        val s = obtainString(map, key)
+        return if (s.isNotEmpty()) s.toBoolean() else defValue
     }
 }
